@@ -1,0 +1,217 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DocAid</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="CareMed demo project">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap4/bootstrap.min.css' %}">
+<link href="{% static 'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/owl.theme.default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/animate.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles/contact.css' %}">
+</head>
+<body>
+
+<div class="super_container">
+	
+	<!-- Header -->
+
+	<header class="header trans_200">
+		
+		<!-- Top Bar -->
+		<div class="top_bar">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
+							<div class="top_bar_item"><a href="/login/">Login</a></div>
+							<div class="top_bar_item"><a href="/signup/">Sign Up</a></div>
+							<div class="emergencies  d-flex flex-row align-items-center justify-content-start ml-auto">For Emergencies: Call 102</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Logo -->
+		<div class="logo_container_outer">
+
+
+						<div class="logo_container">
+							<a href="#">
+								<div class="logo_content d-flex flex-column align-items-start justify-content-center">
+									<div class="logo_line"></div>
+									<div class="logo d-flex flex-row align-items-center justify-content-center">
+										<div class="logo_text">Doc<span>Aid</span></div>
+										<div class="logo_box">+</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+
+		</div>
+
+	</header>
+
+
+
+	<!-- Home -->
+
+	<div class="home" >
+		<div class="home_slider_container">
+			<!-- Home Slider -->
+			<div class="owl-carousel owl-theme home_slider">
+
+				<!-- Slider Item -->
+				<div class="owl-item">
+                    <div class="home_slider_background" style="background-image:url({% static 'images/home_background_1.jpg' %})"></div>
+					<div class="home_content" style="position:absolute;top:40%;">
+						<!-- Contact Form -->
+                        <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
+                            <div class="contact_form_container">
+                                <form id="contact_form" class="contact_form" method="post" action="/login/">{% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6 input_col">
+                                            <div class="input_container input_name"><input type="text" class="contact_input" placeholder="License Number" required="required" name="lic_no"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 input_col">
+                                            <div class="input_container"><input type="password" class="contact_input" placeholder="Password" required="required" name="password"></div>
+                                        </div>
+                                    </div>
+                                    <button class="button contact_button"><a><input type="submit" style="display: none">Login</a></button>
+                                    <button class="button contact_button"><a href="/signup/">Sign Up</a></button>
+                                </form>
+                            </div>
+                        </div>
+					</div>
+				</div>
+
+
+			</div>
+
+			<!-- Slider Progress -->
+			<div class="home_slider_progress"></div>
+		</div>
+	</div>
+
+
+    <!-- 2 Boxes -->
+
+	<div class="boxes">
+		<div class="container">
+			<div class="row">
+
+				<!-- Box -->
+				<div class="col-lg-4 box_col">
+					<div class="box box_appointments">
+						<div class="box_icon d-flex flex-column align-items-start justify-content-center"><div style="width: 29px; height:29px;"><img src="{% static 'images/phone-call.svg'%}" alt=""></div></div>
+						<div class="box_title">Appointments</div>
+                        <div class="box_text">View all the appointments online<br>No need to visit clinic or contact receptionist<br>Keep calm and manage appointments online</div>
+					</div>
+				</div>
+
+				<!-- Box -->
+				<div class="col-lg-4 box_col">
+					<div class="box box_appointments">
+						<div class="box_icon d-flex flex-column align-items-start justify-content-center"><div style="width: 29px; height:29px;"><img src="{% static 'images/alarm-clock.svg' %}" alt=""></div></div>
+						<div class="box_title">Medical History of the Patient</div>
+						<div class="box_text">Patient's record online at a single click<br> No need to maintain bunch of files</div>
+					</div>
+				</div>
+
+                <!-- Box -->
+                <div class="col-lg-4 box_col">
+					<div class="box box_appointments">
+						<div class="box_icon d-flex flex-column align-items-start justify-content-center"><div style="width: 29px; height:29px;"><img src="{% static 'images/envelope.svg' %}" alt=""></div></div>
+						<div class="box_title">Voice Prescription</div>
+						<div class="box_text">No need to write prescription<br>Use DocAid to dictate what you want to write<br>And the prescription will get generated</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+
+
+    <!-- Services -->
+
+	<div class="services">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div class="section_title"><h2>Our Featured Services</h2></div>
+				</div>
+			</div>
+			<div class="row services_row">
+
+				<!-- Service -->
+				<div class="col-lg-4 col-md-6 service_col">
+						<div class="service text-center trans_200">
+							<div class="service_icon"><img class="svg" src="{% static 'images/service_1.svg' %}" alt=""></div>
+							<div class="service_title trans_200">Security</div>
+							<div class="service_text">
+                                <p>The data of patients is maintained in a secured manner via end to end encryption</p>
+							</div>
+						</div>
+				</div>
+
+				<!-- Service -->
+				<div class="col-lg-4 col-md-6 service_col">
+						<div class="service text-center trans_200">
+							<div class="service_icon"><img class="svg" src="{% static 'images/service_5.svg' %}" alt=""></div>
+							<div class="service_title trans_200">Voice Prescription</div>
+							<div class="service_text">
+                                <p>Prescription gets generated automatically through speech to text and NLP</p>
+							</div>
+						</div>
+				</div>
+
+
+
+
+				<!-- Service -->
+				<div class="col-lg-4 col-md-6 service_col">
+
+						<div class="service text-center trans_200">
+							<div class="service_icon"><img class="svg" src="{% static 'images/service_2.svg' %}" alt=""></div>
+							<div class="service_title trans_200">Dashboard</div>
+							<div class="service_text">
+                                <p>Analysis and visualization of all the records for better understanding of medical history</p>
+                            </div>
+						</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+
+
+
+</div>
+
+<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static 'styles/bootstrap4/popper.js' %}"></script>
+<script src="{% static 'styles/bootstrap4/bootstrap.min.js' %}"></script>
+<script src="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>
+<script src="{% static 'plugins/easing/easing.js' %}"></script>
+<script src="{% static 'plugins/parallax-js-master/parallax.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+</body>
+</html>

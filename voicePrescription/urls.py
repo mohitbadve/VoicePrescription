@@ -28,4 +28,5 @@ urlpatterns = [
     path('record_audio_nav/', record_audio_nav),
     path('record_audio_start/', record_audio_start),
     path('record_audio_stop/', record_audio_stop),
+    path('print_qr_code/', print_qr_code),
 ]

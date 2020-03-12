@@ -16,6 +16,18 @@
 <link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/contact.css' %}">
+
+<script>
+    function changeStatus(i) {
+        if(i==0){
+            document.getElementById('stat').innerText = 'Recording Stopped';
+        }
+        else{
+            document.getElementById('stat').innerText = 'Recording Started';
+        }
+    }
+</script>
+
 </head>
 <body>
 
@@ -31,9 +43,10 @@
 				<div class="row">
 					<div class="col">
 						<div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
-							<div class="top_bar_item"><a href="/record_audio/">Generate Prescription ( Record Audio )</a></div>
+							<div class="top_bar_item"><a href="/record_audio_nav/">Generate Prescription ( Record Audio )</a></div>
 							<div class="top_bar_item"><a href="/view_patient_history/">View Patient History</a></div>
 							<div class="top_bar_item"><a href="/view_doctor_history/">View My History</a></div>
+                            <div class="top_bar_item"><a href="/print_qr_code/">Print QR Code</a></div>
                             <div class="emergencies  d-flex flex-row align-items-center justify-content-start ml-auto"><a>Hello {{ name }}</a></div>
                             <div class="top_bar_item"><a href="/logout/">Logout</a></div>
                         </div>
@@ -83,8 +96,9 @@
 						<!-- Contact Form -->
                         <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
                             <div class="contact_form_container">
-                                    <button class="button contact_button"><a href="/record_audio_start/">Start Recording</a></button>
-                                    <button class="button contact_button"><a href="/record_audio_stop/">Stop Recording</a></button>
+                                <p id = 'stat' class="box_title" style="color: #283290;">Press <span style="color: #ff0030">Start Recording</span> to Start</p><br>
+                                    <button class="button contact_button" onclick="changeStatus(1)"><a href="/record_audio_start/">Start Recording</a></button>
+                                    <button class="button contact_button" onclick="changeStatus(0)"><a href="/record_audio_stop/">Stop Recording</a></button>
                             </div>
                         </div>
 					</div>

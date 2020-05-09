@@ -8,8 +8,10 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 import qrcode
 import pyrebase
+from django.shortcuts import redirect
 
 checkIfRecording = -1
+main_text = ""
 
 firebaseConfig = {
     'apiKey': "AIzaSyCrXBHU_5S4tmWLQOaQIVvoRjjUeOfQjm0",
@@ -101,7 +103,7 @@ def record_audio_start(request):
     global checkIfRecording
     if checkIfRecording == -1:
         checkIfRecording = 1
-    main_text = ""
+    global main_text
     translatedHindi = ""
     translatedMarathi = ""
     # obtain audio from the microphone
@@ -120,16 +122,37 @@ def record_audio_start(request):
         except sr.RequestError as e:
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
         print(main_text)
+
+    #NLP
+
+    #EDIT
+    return render(request,'edit_prescription.html',{'draft':main_text})
+
+def record_audio_stop(request):
+    global checkIfRecording
+    checkIfRecording = 0
+    return redirect(record_audio_start)
+
+def record_audio_nav(request):
+    return render(request,'record_audio.html',{'name':request.session['user_name'],'stat':''})
+
+
+def print_qr_code(request):
+    return render(request,'print_qr_code.html',{'user_id':request.session['user_id'],'signup':'0','name':request.session['user_name']})
+
+
+def edit_prescription(request):
+    updated_prescription = request.POST.get('prescription')
     translator = Translator()
-    translatedHindi = translator.translate(main_text, src='en', dest='hi')
-    translatedMarathi = translator.translate(main_text, src='en', dest='mr')
+    translatedHindi = translator.translate(updated_prescription, src='en', dest='hi')
+    translatedMarathi = translator.translate(updated_prescription, src='en', dest='mr')
     print(translatedHindi.text)
     print(translatedMarathi.text)
 
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=14)
-    pdf.write(5,main_text)
+    pdf.write(5,updated_prescription)
     pdf.output("pres_English.pdf")
 
     pdf = FPDF()
@@ -147,34 +170,29 @@ def record_audio_start(request):
     s = translatedMarathi.text
     pdf.write(5,s)
     pdf.output("pres_Marathi.pdf")
-
     cur_patient = database.child("cur_patient").child(request.session['user_id']).get().val()
     print(cur_patient)
     cur_patient_email_id = database.child(cur_patient).child('email_id').get().val()
-    print(cur_patient_email_id)
+    return render(request,'mail_prescription.html',{'patient':cur_patient_email_id})
 
+def mail_prescription(request):
+    cur_patient_email_id = request.POST.get('patient')
+    english = request.POST.get('English')
+    hindi = request.POST.get('Hindi')
+    marathi = request.POST.get('Marathi')
+    print(english,hindi,marathi)
     email = EmailMessage(
         'Prescription from ' + str(request.session['user_name']),
         'Thank you for using DocAid.\nPlease find attached prescription',
         settings.EMAIL_HOST_USER,
         [cur_patient_email_id],
-        ['mohit.badve@spit.ac.in'],#bcc
+        ['mohit.badve@spit.ac.in'],  # bcc
     )
-    email.attach_file('pres_English.pdf')
-    email.attach_file('pres_Hindi.pdf')
-    email.attach_file('pres_Marathi.pdf')
+    if english:
+        email.attach_file('pres_English.pdf')
+    if hindi:
+        email.attach_file('pres_Hindi.pdf')
+    if marathi:
+        email.attach_file('pres_Marathi.pdf')
     email.send()
-
-    return render(request,'record_audio.html',{'name':request.session['user_name'],'stat':'Recording Has Stopped'})
-
-def record_audio_stop(request):
-    global checkIfRecording
-    checkIfRecording = 0
-    return render(request,'record_audio.html',{'name':request.session['user_name'],'stat':'Recording Has Stopped'})
-
-def record_audio_nav(request):
-    return render(request,'record_audio.html',{'name':request.session['user_name'],'stat':''})
-
-
-def print_qr_code(request):
-    return render(request,'print_qr_code.html',{'user_id':request.session['user_id'],'signup':'0','name':request.session['user_name']})
+    return render(request,'index.html')

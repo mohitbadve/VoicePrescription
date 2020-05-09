@@ -17,17 +17,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/contact.css' %}">
 
-<script>
-    function changeStatus(i) {
-        if(i==0){
-            document.getElementById('stat').innerText = 'Recording Stopped';
-        }
-        else{
-            document.getElementById('stat').innerText = 'Recording Started';
-        }
-    }
-</script>
-
 </head>
 <body>
 
@@ -96,9 +85,15 @@
 						<!-- Contact Form -->
                         <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
                             <div class="contact_form_container">
-                                <p id = 'stat' class="box_title" style="color: #283290;">Press <span style="color: #ff0030">Start Recording</span> to Start</p><br>
-                                    <button class="button contact_button" onclick="changeStatus(1)"><a href="/record_audio_start/">Start Recording</a></button>
-                                    <button class="button contact_button" onclick="changeStatus(0)"><a href="/record_audio_stop/">Stop Recording</a></button>
+                                <form action="/mail_prescription/" method="post">{% csrf_token %}
+                                    Please Select the Laguage of the Prescription
+                                    <input type="checkbox" value="English" name="English">English<br>
+                                    <input type="checkbox" value="Hindi" name="Hindi">Hindi<br>
+                                    <input type="checkbox" value="Marathi" name="Marathi">Marathi<br>
+                                    <input type="hidden" value="{{ patient }}">
+                                    <button class="button contact_button"><a><input type="submit" style="display: none">Mail To {{ patient }}</a></button>
+                                </form>
+
                             </div>
                         </div>
 					</div>
@@ -106,6 +101,7 @@
 
 
 			</div>
+
 		</div>
     </div>
 

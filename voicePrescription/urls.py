@@ -29,4 +29,6 @@ urlpatterns = [
     path('record_audio_start/', record_audio_start),
     path('record_audio_stop/', record_audio_stop),
     path('print_qr_code/', print_qr_code),
+    path('edit_prescription/', edit_prescription),
+    path('mail_prescription/', mail_prescription),
 ]

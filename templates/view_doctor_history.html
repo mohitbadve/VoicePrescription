@@ -2,9 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>DocAid</title>
 </head>
-<body>
+<style>
+    h1{
+        padding-left: 200px;
+    }
+    th{
+        background-color: #283290;
+        color: white;
+    }
+    table, th, td {
+  border: 1px solid black;
+}
 
+th, td {
+  padding: 10px;
+}
+    tr:hover {background-color: #f5f5f5;}
+
+
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+    background: lightgoldenrodyellow;
+  padding: 8px;
+}
+
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #283290;
+  color: white;
+}
+</style>
+<body>
+<h1>Patient details</h1>
+<table id="customers">
+    <tr>
+        <th>Patient_id</th>
+        <th>Name</th>
+        <th>Date of visit</th>
+        <th>Symptoms</th>
+        <th>Diagonsis</th>
+        <th>B.P.</th>
+        <th>Sugar level</th>
+    </tr>
+    {% for r in res %}
+    <tr>
+        <td>{{ r.0}}</td>
+        <td>{{ r.2 }}</td>
+        <td>{{ r.3}}</td>
+        <td>{{ r.4 }}</td>
+        <td>{{ r.5 }}</td>
+        <td>{{ r.6 }}</td>
+        <td>{{ r.7 }}</td>
+    </tr>
+    {% endfor %}
+</table>
 </body>
 </html>

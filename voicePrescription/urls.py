@@ -31,4 +31,5 @@ urlpatterns = [
     path('print_qr_code/', print_qr_code),
     path('edit_prescription/', edit_prescription),
     path('mail_prescription/', mail_prescription),
+    path('appointments/', appointments),
 ]

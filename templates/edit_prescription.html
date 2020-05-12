@@ -16,7 +16,31 @@
 <link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/contact.css' %}">
+<style>
+    input{
+        size: 50px;
+    }
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
 
+#customers td, #customers th {
+  border: 1px solid #ddd;
+    background: lightgoldenrodyellow;
+  padding: 8px;
+}
+
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #283290;
+  color: white;
+}
+</style>
 </head>
 <body>
 
@@ -81,14 +105,39 @@
 				<!-- Slider Item -->
 				<div class="owl-item">
                     <div class="home_slider_background" style="background-image:url({% static 'images/home_background_1.jpg' %})"></div>
-					<div class="home_content" style="position:absolute;top:40%;">
+					<div class="home_content" style="position:absolute;top:30%;">
 						<!-- Contact Form -->
-                        <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
+                        <div class="col-lg-6 form_col" style="position:relative; left: 270px;">
                             <div class="contact_form_container">
                                 <form action="/edit_prescription/" method="post">{% csrf_token %}
                                     Prescription Draft<br>
-                                    <textarea contenteditable="true" value="{{ draft }}" name="prescription">{{ draft }}</textarea><br>
-                                    <button class="button contact_button"><a><input type="submit" style="display: none">Final Submit</a></button>
+                                    <table id = 'customers'>
+                                        <tr>
+                                            <td><b><u>Patient Name</u></b></td>
+                                            <td><input type="text" name ='name' contenteditable="true" value="{{ draft.0 }}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><u>Symptoms</u></b></td>
+                                            <td><input type="text" name ='symptoms' contenteditable="true" value="{{ draft.1 }}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><u>Diagnosis</u></b></td>
+                                            <td><input type="text" name ='diagnosis' contenteditable="true" value="{{ draft.2 }}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><u>Medicines</u></b></td>
+                                            <td><input type="text" name ='medicines' contenteditable="true" value="{{ draft.3 }}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><u>Dosage</u></b></td>
+                                            <td><input type="text" name ='dosage' contenteditable="true" value="{{ draft.4 }}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><u>Advice</u></b></td>
+                                            <td><input type="text" name ='advice' contenteditable="true" value="{{ draft.5 }}"></td>
+                                        </tr>
+                                    </table>
+                                    <button class="button contact_button" style="position: relative;top: 5px;"><a><input type="submit" style="display: none">Final Submit</a></button>
                                 </form>
 
                             </div>

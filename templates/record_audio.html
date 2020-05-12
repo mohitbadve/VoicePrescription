@@ -44,6 +44,7 @@
 					<div class="col">
 						<div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
 							<div class="top_bar_item"><a href="/record_audio_nav/">Generate Prescription ( Record Audio )</a></div>
+                            <div class="top_bar_item"><a href="/appointments/">My Appointments</a></div>
 							<div class="top_bar_item"><a href="/view_patient_history/">View Patient History</a></div>
 							<div class="top_bar_item"><a href="/view_doctor_history/">View My History</a></div>
                             <div class="top_bar_item"><a href="/print_qr_code/">Print QR Code</a></div>
@@ -96,7 +97,7 @@
 						<!-- Contact Form -->
                         <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
                             <div class="contact_form_container">
-                                <p id = 'stat' class="box_title" style="color: #283290;">Press <span style="color: #ff0030">Start Recording</span> to Start</p><br>
+                                <p id = 'stat' class="box_title" style="color: #283290;">Please <span style="color: #ff0030">Say {{ whatToSay }}</span></p><br>
                                     <button class="button contact_button" onclick="changeStatus(1)"><a href="/record_audio_start/">Start Recording</a></button>
                                     <button class="button contact_button" onclick="changeStatus(0)"><a href="/record_audio_stop/">Stop Recording</a></button>
                             </div>

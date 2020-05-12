@@ -33,6 +33,7 @@
 					<div class="col">
 						<div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
 							<div class="top_bar_item"><a href="/record_audio_nav/">Generate Prescription ( Record Audio )</a></div>
+                            <div class="top_bar_item"><a href="/appointments/">My Appointments</a></div>
 							<div class="top_bar_item"><a href="/view_patient_history/">View Patient History</a></div>
 							<div class="top_bar_item"><a href="/view_doctor_history/">View My History</a></div>
                             <div class="top_bar_item"><a href="/print_qr_code/">Print QR Code</a></div>
@@ -86,11 +87,11 @@
                         <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
                             <div class="contact_form_container">
                                 <form action="/mail_prescription/" method="post">{% csrf_token %}
-                                    Please Select the Laguage of the Prescription
-                                    <input type="checkbox" value="English" name="English">English<br>
-                                    <input type="checkbox" value="Hindi" name="Hindi">Hindi<br>
-                                    <input type="checkbox" value="Marathi" name="Marathi">Marathi<br>
-                                    <input type="hidden" value="{{ patient }}">
+                                    Please Select the Language of the Prescription<br>
+                                    <input type="checkbox" value="English" name="English">English - <a href="{% static  pres_english %}" target="_blank">View PDF</a><br>
+                                    <input type="checkbox" value="Hindi" name="Hindi">Hindi - <a href="{% static pres_hindi %}" target="_blank">View PDF</a><br>
+                                    <input type="checkbox" value="Marathi" name="Marathi">Marathi - <a href="{% static pres_marathi %}" target="_blank">View PDF</a><br><br><br><br><br>
+                                    <input type="hidden" name="patient" value="{{ patient }} ">
                                     <button class="button contact_button"><a><input type="submit" style="display: none">Mail To {{ patient }}</a></button>
                                 </form>
 

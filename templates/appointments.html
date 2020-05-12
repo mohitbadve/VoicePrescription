@@ -16,6 +16,28 @@
 <link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/contact.css' %}">
+<style>
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+    background: lightgoldenrodyellow;
+  padding: 8px;
+}
+
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #283290;
+  color: white;
+}
+</style>
 </head>
 <body>
 
@@ -35,6 +57,7 @@
                             <div class="top_bar_item"><a href="/appointments/">My Appointments</a></div>
 							<div class="top_bar_item"><a href="/view_patient_history/">View Patient History</a></div>
 							<div class="top_bar_item"><a href="/view_doctor_history/">View My History</a></div>
+                            <div class="top_bar_item"><a href="/print_qr_code/">Print QR Code</a></div>
                             <div class="emergencies  d-flex flex-row align-items-center justify-content-start ml-auto"><a>Hello {{ name }}</a></div>
                             <div class="top_bar_item"><a href="/logout/">Logout</a></div>
                         </div>
@@ -72,11 +95,49 @@
 
 
 
+    <div class="home" >
+		<div class="home_slider_container">
+			<!-- Home Slider -->
+			<div class="owl-carousel owl-theme home_slider">
 
+				<!-- Slider Item -->
+				<div class="owl-item">
+                    <div class="home_slider_background" style="background-image:url({% static 'images/home_background_1.jpg' %})"></div>
+					<div class="home_content" style="position:absolute;top:40%;">
+						<!-- Contact Form -->
+                        <div class="col-lg-6 form_col" style="position:relative; left: 250px;">
+                            <div class="contact_form_container">
+                                <table id = 'customers'>
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <th>Patient Email ID</th>
+                                        <th>Patient Mobile Number</th>
+                                        <th>Time</th>
+                                    </tr>
+                                    {% for i in appointments %}
+                                        <tr>
+                                            <td>{{ i.1.0 }}</td>
+                                            <td>{{ i.1.1 }}</td>
+                                            <td>{{ i.1.2 }}</td>
+                                            <td>{{ i.0 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+					</div>
+				</div>
+
+
+			</div>
+
+		</div>
+    </div>
 
 
 
 </div>
+
 
 <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
 <script src="{% static 'styles/bootstrap4/popper.js' %}"></script>

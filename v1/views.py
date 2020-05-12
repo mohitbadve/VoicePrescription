@@ -9,9 +9,17 @@ from django.core.mail import EmailMessage
 import qrcode
 import pyrebase
 from django.shortcuts import redirect
+import datetime
+import pandas as pd
+from bokeh.plotting import figure
+from bokeh.embed import components
 
-checkIfRecording = -1
+uName = ''
+w = -1
 main_text = ""
+whatToSay = ['Patient Name','Symptoms','Diagnosis','Medicines','Dosage','Advice']
+checkRecordings = [-1,-1,-1,-1,-1,-1]
+prescription_data = [[] for i in range(6)]
 
 firebaseConfig = {
     'apiKey': "AIzaSyCrXBHU_5S4tmWLQOaQIVvoRjjUeOfQjm0",
@@ -24,6 +32,18 @@ firebaseConfig = {
 }
 firebase = pyrebase.initialize_app(firebaseConfig)
 database=firebase.database()
+class PDF(FPDF):
+    def header(self):
+        self.image(r'static/images/docaid_logo.png', 10, 8, 33)
+        self.set_font('Arial', 'B', 15)
+        self.cell(80)
+        self.cell(30, 10, 'Prescription', 1, 0, 'C')
+        self.ln(50)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, 'Prescription From Dr.' + uName , 0, 0, 'C')
 
 def logout(request):
     try:
@@ -54,7 +74,7 @@ def index(request):
     else:
         try:
             if request.session['user_id']:
-                return render(request, 'record_audio.html',{'name':request.session['user_name'],'stat':''})
+                return render(request, 'record_audio.html',{'whatToSay':'Press Start Recording','name':request.session['user_name'],'stat':''})
         except:
             return render(request, 'index.html')
 
@@ -93,48 +113,105 @@ def signup(request):
 
 
 def view_patient_history(request):
+    cur_patient = database.child("cur_patient").child(request.session['user_id']).get().val()
+    print(cur_patient)
+    patient_id = "1"
+    con = pymysql.connect('db4free.net', 'mohit2000', 'Mohit@2K', 'voicepres')
+    with con:
+        cur = con.cursor()
+        q = "SELECT * FROM `patient_data` WHERE `patient_id`= "+patient_id
+        df = pd.read_sql(q, con=con)
+        x = list(df['date_of_visit'])
+        y1 = list(df['bp'])
+        y2 = list(df['sugar'])
+        plot = figure(title='bp rate ',
+                      x_axis_label='date_of_visit',
+                      y_axis_label='bp',
+                      plot_width=600,
+                      plot_height=600)
 
-    return render(request,'view_patient_history.html',{'name':request.session['user_name']})
+        plot.line(x, y1, legend='f(x)', line_width=2)
+        script, div = components(plot)
+
+        plot2 = figure(title='sugar rate ',
+                      x_axis_label='date_of_visit',
+                      y_axis_label='sugar',
+                      plot_width=600,
+                      plot_height=600)
+
+        plot2.line(x, y2, legend='f(x)', line_width=2)
+        script2, div2 = components(plot2)
+
+        print(df)
+    return render(request,'view_patient_history.html',{'name':request.session['user_name'],'script': script, 'div': div,'script2': script2, 'div2': div2})
 
 def view_doctor_history(request):
-    return render(request,'view_doctor_history.html',{'name':request.session['user_name']})
+    doctor_id = request.session['user_id']
+    #doctor_id = "007"
+    con = pymysql.connect('db4free.net', 'mohit2000', 'Mohit@2K', 'voicepres')
+    with con:
+        cur = con.cursor()
+        query = "SELECT * FROM `patient_data` WHERE `doctor_id` = %s "
+        cur.execute(query,doctor_id)
+        res = cur.fetchall()
+        # print(res)
+    return render(request,'view_doctor_history.html',{'name':request.session['user_name'],'res':res})
 
 def record_audio_start(request):
-    global checkIfRecording
-    if checkIfRecording == -1:
-        checkIfRecording = 1
-    global main_text
-    translatedHindi = ""
-    translatedMarathi = ""
-    # obtain audio from the microphone
-    while(checkIfRecording == 1):
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            print("Say something!")
-            audio = r.listen(source)
-        # recognize speech using Google Speech Recognition
-        try:
-            new_text = r.recognize_google(audio)
-            main_text = main_text + "\n" + new_text
-            print("Google Speech Recognition thinks you said " + new_text)
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service; {0}".format(e))
-        print(main_text)
+    global w
+    global checkRecordings
+    if w != -1:
+        if checkRecordings[w] == -1:
+            checkRecordings[w] = 1
+        global main_text
+        global prescription_data
+        # obtain audio from the microphone
+        while(checkRecordings[w] == 1):
+            r = sr.Recognizer()
+            with sr.Microphone() as source:
+                print("Say something!")
+                audio = r.listen(source)
+            # recognize speech using Google Speech Recognition
+            try:
+                new_text = r.recognize_google(audio)
+                if new_text:
+                    if new_text != None and new_text not in prescription_data[w]:
+                        prescription_data[w].append(new_text)
+                print("Google Speech Recognition thinks you said " + new_text)
+            except sr.UnknownValueError:
+                print("Google Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            print(prescription_data[w])
 
-    #NLP
 
-    #EDIT
-    return render(request,'edit_prescription.html',{'draft':main_text})
+
+    print(w,'In Start')
+    if w == -1:
+        w += 1
+        return render(request,'record_audio.html',{'whatToSay':whatToSay[0],'name':request.session['user_name']})
+    if w == 6:
+        for i in range(len(prescription_data)):
+            prescription_data[i] = "".join(prescription_data[i])
+        print(prescription_data)
+        return render(request,'edit_prescription.html',{'draft':prescription_data,'name':request.session['user_name']})
 
 def record_audio_stop(request):
-    global checkIfRecording
-    checkIfRecording = 0
-    return redirect(record_audio_start)
+    global checkRecordings
+    global w
+    if w != -1:
+        checkRecordings[w] = 0
+    print(w, 'In Stop')
+    w += 1
+    if w == 6:
+        for i in range(len(prescription_data)):
+            prescription_data[i] = "".join(prescription_data[i])
+        print(prescription_data)
+        return render(request,'edit_prescription.html',{'draft':prescription_data,'name':request.session['user_name']})
+    return render(request,'record_audio.html',{'whatToSay':whatToSay[w],'name':request.session['user_name']})
 
 def record_audio_nav(request):
-    return render(request,'record_audio.html',{'name':request.session['user_name'],'stat':''})
+    return render(request,'record_audio.html',{'whatToSay':'Press Start Recording','name':request.session['user_name'],'stat':''})
 
 
 def print_qr_code(request):
@@ -142,38 +219,107 @@ def print_qr_code(request):
 
 
 def edit_prescription(request):
-    updated_prescription = request.POST.get('prescription')
-    translator = Translator()
-    translatedHindi = translator.translate(updated_prescription, src='en', dest='hi')
-    translatedMarathi = translator.translate(updated_prescription, src='en', dest='mr')
-    print(translatedHindi.text)
-    print(translatedMarathi.text)
+    def translateIntoMH(s):
+        translator = Translator()
+        return translator.translate(s, src='en', dest='hi').text,translator.translate(s, src='en', dest='mr').text
 
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=14)
-    pdf.write(5,updated_prescription)
-    pdf.output("pres_English.pdf")
+    global w,uName
+    uName = request.session['user_name']
+    w = 0
+    name = request.POST.get('name')
+    symptoms = request.POST.get('symptoms')
+    medicines = request.POST.get('medicines')
+    advice = request.POST.get('advice')
+    diagnosis = request.POST.get('diagnosis')
+    dosage = request.POST.get('dosage')
+    
+    nameTH,nameTM = translateIntoMH('name')
+    symptomsTH, symptomsTM  = translateIntoMH('symptoms')
+    diagnosisTH, diagnosisTM = translateIntoMH('diagnosis')
+    medicinesTH, medicinesTM = translateIntoMH('medicines')
+    dosageTH, dosageTM = translateIntoMH('dosage')
+    adviceTH, adviceTM = translateIntoMH('advice')
 
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
-    pdf.set_font('gargi', '', 14)
-    s = translatedHindi.text
-    pdf.write(5,s)
-    pdf.output("pres_Hindi.pdf")
+    nameH,nameM = translateIntoMH(name)
+    symptomsH,symptomsM = translateIntoMH(symptoms)
+    medicinesH,medicinesM = translateIntoMH(medicines)
+    adviceH,adviceM = translateIntoMH(advice)
+    diagnosisH,diagnosisM = translateIntoMH(diagnosis)
+    dosageH,dosageM = translateIntoMH(dosage)
 
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
-    pdf.set_font('gargi', '', 14)
-    s = translatedMarathi.text
-    pdf.write(5,s)
-    pdf.output("pres_Marathi.pdf")
-    cur_patient = database.child("cur_patient").child(request.session['user_id']).get().val()
+    english_pres = [['Name',name],['Symptoms',symptoms],['Diagnosis',diagnosis],['Medicines',medicines],['Dosage',dosage],['Advice',advice]]
+    hindi_pres = [[nameTH,nameH],[symptomsTH,symptomsH],[diagnosisTH,diagnosisH],[medicinesTH,medicinesH],[dosageTH,dosageH],[adviceTH,adviceH]]
+    marathi_pres = [[nameTM,nameM],[symptomsTM,symptomsM],[diagnosisTM,diagnosisM],[medicinesTM,medicinesM],[dosageTM,dosageM],[adviceTM,adviceM]]
+    today = datetime.date.today()
+    today = today.strftime('%Y-%m-%d')
+    cur_patient = str(database.child("cur_patient").child(request.session['user_id']).get().val())
     print(cur_patient)
+
+
+
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font('Times', '', 14)
+    pdf.ln(0.5)
+    epw = pdf.w - 2 * pdf.l_margin
+    col_width = epw / 2
+    th = pdf.font_size
+    for row in english_pres:
+        for datum in row:
+            pdf.cell(col_width, 2 * th, str(datum), border=1)
+        pdf.ln(2 * th)
+    pdf.output(r'static/pres/' + cur_patient + '_' + today + '_' + "pres_English.pdf",dest = 'F')
+
+    pdf = PDF()
+    pdf.add_page()
+    pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
+    pdf.set_font('gargi', '', 14)
+    pdf.ln(0.5)
+    epw = pdf.w - 2 * pdf.l_margin
+    col_width = epw / 2
+    th = pdf.font_size
+    for row in hindi_pres:
+        for datum in row:
+            pdf.cell(col_width, 2 * th, str(datum), border=1)
+        pdf.ln(2 * th)
+    pdf.output(r'static/pres/' + cur_patient + '_' + today + '_' + "pres_Hindi.pdf", dest='F')
+
+    pdf = PDF()
+    pdf.add_page()
+    pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
+    pdf.set_font('gargi', '', 14)
+    pdf.ln(0.5)
+    epw = pdf.w - 2 * pdf.l_margin
+    col_width = epw / 2
+    th = pdf.font_size
+    for row in marathi_pres:
+        for datum in row:
+            pdf.cell(col_width, 2 * th, str(datum), border=1)
+        pdf.ln(2 * th)
+    pdf.output(r'static/pres/' + cur_patient + '_' + today + '_' + "pres_Marathi.pdf", dest='F')
+
+    # pdf = PDF()
+    # pdf.add_page()
+    # pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
+    # pdf.set_font('gargi', '', 14)
+    # s =
+    # pdf.write(5, s)
+    # pdf.output(r'static/pres/' + cur_patient + '_' + today + '_' + "pres_Hindi.pdf",dest = 'F')
+    #
+    # pdf = PDF()
+    # pdf.add_page()
+    # pdf.add_font('gargi', '', 'gargi.ttf', uni=True)
+    # pdf.set_font('gargi', '', 14)
+    # s =
+    # pdf.write(5, s)
+    # pdf.output(r'static/pres/' + cur_patient + '_' + today + '_' + "pres_Marathi.pdf",dest = 'F')
+
+
     cur_patient_email_id = database.child(cur_patient).child('email_id').get().val()
-    return render(request,'mail_prescription.html',{'patient':cur_patient_email_id})
+    return render(request,'mail_prescription.html',{'pres_english':r'pres/' + cur_patient + '_' + today + '_' + "pres_English.pdf",
+                                                    'pres_hindi': r'pres/' + cur_patient + '_' + today + '_' + "pres_Hindi.pdf",
+                                                    'pres_marathi': r'pres/' + cur_patient + '_' + today + '_' + "pres_Marathi.pdf",
+                                                    'patient':cur_patient_email_id,'name':request.session['user_name']})
 
 def mail_prescription(request):
     cur_patient_email_id = request.POST.get('patient')
@@ -188,11 +334,30 @@ def mail_prescription(request):
         [cur_patient_email_id],
         ['mohit.badve@spit.ac.in'],  # bcc
     )
+    today = datetime.date.today()
+    today = today.strftime('%Y-%m-%d')
+    cur_patient = str(database.child("cur_patient").child(request.session['user_id']).get().val())
     if english:
-        email.attach_file('pres_English.pdf')
+        email.attach_file(r'static/pres/'+ cur_patient + '_' + today + '_' + "pres_English.pdf")
     if hindi:
-        email.attach_file('pres_Hindi.pdf')
+        email.attach_file(r'static/pres/'+ cur_patient + '_' + today + '_' +"pres_Hindi.pdf")
     if marathi:
-        email.attach_file('pres_Marathi.pdf')
+        email.attach_file(r'static/pres/'+ cur_patient + '_' + today +'_' + "pres_Marathi.pdf")
     email.send()
-    return render(request,'index.html')
+    return redirect(index)
+
+def appointments(request):
+    a = []
+    today = datetime.date.today()
+    today = today.strftime("%Y-%m-%d")
+    print(today)
+    print(request.session['user_id'])
+    data = database.child('appointments').child(request.session['user_id']).child(today).get().val()
+    print(data)
+    for k,v in data.items():
+        n = database.child(v).child('name').get().val()
+        e = database.child(v).child('email_id').get().val()
+        m = database.child(v).child('mob_no').get().val()
+        a.append([k,[n,e,m]])
+
+    return render(request,'appointments.html',{'appointments':a,'name':request.session['user_name']})

@@ -69,7 +69,7 @@ def index(request):
             if(len(data) == 1):
                 request.session['user_name'] = str(data[0][4])
                 request.session['user_id'] = str(data[0][2])
-                return render(request, 'record_audio.html',{'name':data[0][4],'stat':''})
+                return render(request, 'record_audio.html',{'whatToSay':'Press Start Recording','name':data[0][4],'stat':''})
         return render(request,'e403.html')
     else:
         try:
@@ -250,6 +250,7 @@ def edit_prescription(request):
     english_pres = [['Name',name],['Symptoms',symptoms],['Diagnosis',diagnosis],['Medicines',medicines],['Dosage',dosage],['Advice',advice]]
     hindi_pres = [[nameTH,nameH],[symptomsTH,symptomsH],[diagnosisTH,diagnosisH],[medicinesTH,medicinesH],[dosageTH,dosageH],[adviceTH,adviceH]]
     marathi_pres = [[nameTM,nameM],[symptomsTM,symptomsM],[diagnosisTM,diagnosisM],[medicinesTM,medicinesM],[dosageTM,dosageM],[adviceTM,adviceM]]
+
     today = datetime.date.today()
     today = today.strftime('%Y-%m-%d')
     cur_patient = str(database.child("cur_patient").child(request.session['user_id']).get().val())

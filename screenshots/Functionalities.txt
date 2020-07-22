@@ -1,0 +1,6 @@
+1. Automatic generation of prescription based on dictation from doctor. 
+2. Special analytics to doctors and patients.
+3. Personalized diagnosis.
+4. Reminders for medicine consumption. 
+5. Appointment booking.
+6. Instant prescription availability in different languages and easy sharing through automatic Emails, SMS. 

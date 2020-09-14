@@ -8,7 +8,7 @@ fpdf==1.7.2
 gcloud==0.17.0
 googleapis-common-protos==1.51.0
 googletrans==2.4.0
-httplib2==0.17.0
+httplib2==0.18.0
 idna==2.9
 image==1.5.28
 Jinja2==2.11.2

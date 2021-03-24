@@ -34,7 +34,7 @@ PyYAML==5.3.1
 qrcode==6.1
 requests==2.11.1
 requests-toolbelt==0.7.0
-rsa==4.0
+rsa==4.1
 six==1.14.0
 SpeechRecognition==3.8.1
 sqlparse==0.3.0

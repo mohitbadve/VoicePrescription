@@ -30,7 +30,7 @@ Pyrebase==3.0.27
 python-dateutil==2.8.1
 python-jwt==2.0.1
 pytz==2019.3
-PyYAML==5.3.1
+PyYAML==5.4
 qrcode==6.1
 requests==2.11.1
 requests-toolbelt==0.7.0
